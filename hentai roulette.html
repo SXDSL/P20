@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>【Ｐ２０】エロのメイド</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(1200px 800px at 50% -10%, #2a1040 0%, #0e0e16 55%, #0a0a10 100%);
+            color: #e8e8f0;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .card {
+            width: min(880px, 100%);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, #ff5f8f, #c65bff, #6b8bff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hint {
+            margin-top: 8px;
+            color: #8f8fa8;
+            font-size: 0.95rem;
+        }
+
+        button {
+            margin-top: 26px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 38px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff4d88, #b44dff);
+            box-shadow: 0 4px 24px rgba(255, 77, 136, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(255, 77, 136, 0.5);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0) scale(0.97);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn-row button {
+            margin-top: 0;
+        }
+
+        .ghost {
+            padding: 10px 26px;
+            font-size: 0.95rem;
+            color: #e4c9ff;
+            background: rgba(180, 77, 255, 0.14);
+            border: 1px solid rgba(180, 77, 255, 0.5);
+            box-shadow: none;
+        }
+
+        .ghost:hover:not(:disabled) {
+            background: rgba(180, 77, 255, 0.28);
+            box-shadow: 0 4px 18px rgba(180, 77, 255, 0.35);
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        button.loading .spinner { display: block; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stage {
+            position: relative;
+            margin-top: 30px;
+            min-height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #12121c;
+            border: 1px solid #26263a;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .placeholder {
+            color: #5f5f7a;
+            font-size: 1rem;
+            padding: 20px;
+        }
+
+        .stage img {
+            display: none;
+            max-width: 100%;
+            max-height: 72vh;
+            border-radius: 18px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .stage img.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .chip-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .chip {
+            display: none;
+            margin-top: 16px;
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffd9e6;
+            background: rgba(255, 77, 136, 0.12);
+            border: 1px solid rgba(255, 77, 136, 0.4);
+            border-radius: 999px;
+            width: fit-content;
+        }
+
+        .chip.error {
+            color: #ffb3b3;
+            background: rgba(255, 80, 80, 0.1);
+            border-color: rgba(255, 80, 80, 0.45);
+        }
+
+        .chip.shown { display: block; }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(4, 4, 10, 0.78);
+            backdrop-filter: blur(5px);
+        }
+
+        .overlay.hidden { display: none; }
+
+        .panel {
+            width: min(700px, 100%);
+            max-height: 86vh;
+            overflow-y: auto;
+            background: #12121c;
+            border: 1px solid #2c2c44;
+            border-radius: 18px;
+            padding: 26px 26px 22px;
+            text-align: left;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+        }
+
+        .panel h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff5f8f, #c65bff, #6b8bff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .section-title {
+            margin: 20px 0 10px;
+            color: #8f8fa8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-chip {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .tag-chip input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .tag-chip span {
+            display: inline-block;
+            padding: 6px 14px;
+            border: 1px solid #33334d;
+            border-radius: 999px;
+            background: #1a1a28;
+            color: #b9b9cf;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+
+        .tag-chip:hover span {
+            border-color: rgba(255, 77, 136, 0.55);
+        }
+
+        .tag-chip input:checked + span {
+            color: #fff;
+            background: linear-gradient(135deg, #ff4d88, #b44dff);
+            border-color: transparent;
+            box-shadow: 0 2px 12px rgba(255, 77, 136, 0.35);
+        }
+
+        .panel-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        #save-tags { margin-top: 0; }
+
+        .option-list {
+            margin-top: 18px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 4px;
+            border-bottom: 1px solid #1e1e30;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .option-row:last-child {
+            border-bottom: none;
+        }
+
+        .option-row input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .option-name {
+            order: -1;
+            font-size: 0.97rem;
+            font-weight: 600;
+            color: #d5d5e5;
+        }
+
+        .switch {
+            position: relative;
+            flex-shrink: 0;
+            width: 42px;
+            height: 22px;
+            background: #26263a;
+            border: 1px solid #33334d;
+            border-radius: 999px;
+            transition: background 0.15s ease;
+        }
+
+        .switch::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #8f8fa8;
+            transition: all 0.15s ease;
+        }
+
+        .option-row input:checked + .switch {
+            background: linear-gradient(135deg, #ff4d88, #b44dff);
+            border-color: transparent;
+        }
+
+        .option-row input:checked + .switch::after {
+            left: 22px;
+            background: #fff;
+        }
+
+        #source-link {
+            margin-top: 16px;
+            color: #9a8fd0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted #55487e;
+            padding-bottom: 1px;
+            white-space: nowrap;
+        }
+
+        #source-link:hover {
+            color: #d9ccff;
+            border-bottom-color: #d9ccff;
+        }
+
+        #artist-tag {
+            margin-top: 16px;
+            color: #7d74a8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        #fav-star {
+            position: absolute;
+            right: 12px;
+            bottom: 10px;
+            z-index: 2;
+            margin: 0;
+            padding: 4px 8px;
+            font-size: 1.7rem;
+            line-height: 1;
+            color: #17171f;
+            background: none;
+            border: none;
+            border-radius: 50%;
+            box-shadow: none;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
+        }
+
+        #fav-star:hover:not(:disabled) {
+            transform: scale(1.15);
+            box-shadow: none;
+        }
+
+        #fav-star:active:not(:disabled) {
+            transform: scale(0.9);
+        }
+
+        #fav-star.favorited {
+            color: #ffcc33;
+            text-shadow: 0 0 10px rgba(255, 204, 51, 0.75), 0 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes star-pop {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.5) rotate(-10deg); }
+            65% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        #fav-star.pop {
+            animation: star-pop 0.45s ease;
+        }
+
+        .fav-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .fav-head h2 {
+            flex: 1;
+        }
+
+        .fav-back {
+            margin-top: 0;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+        }
+
+        .fav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+            gap: 8px;
+            max-height: 58vh;
+            overflow-y: auto;
+            padding: 2px;
+        }
+
+        .fav-tile {
+            position: relative;
+            aspect-ratio: 1;
+            background: #1a1a28;
+            border: 1px solid #26263a;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .fav-tile:hover {
+            border-color: rgba(255, 77, 136, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .fav-tile img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .fav-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            margin: 0;
+            padding: 0;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            line-height: 1;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            box-shadow: none;
+        }
+
+        button.fav-remove:hover:not(:disabled) {
+            background: rgba(200, 40, 80, 0.85);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .fav-empty {
+            color: #8f8fa8;
+            text-align: center;
+            padding: 28px 0 12px;
+            font-size: 0.95rem;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>【Ｐ２０】エロのメイド</h1>
+        <p class="hint">(っ◔◡◔)っ ♥ Super Ultra Image Get! Deluxe ♥</p>
+        <button id="surprise">
+            <span class="spinner"></span>
+            <span id="btn-label">Surprise Me</span>
+        </button>
+        <div class="btn-row">
+            <button id="tags-btn" class="ghost">Tags</button>
+            <button id="snowflake-btn" class="ghost">Snowflake</button>
+            <button id="favorites-btn" class="ghost">Favorites</button>
+        </div>
+        <div class="stage" id="stage">
+            <span class="placeholder" id="placeholder">Your next surprise loads here</span>
+            <img id="image" alt="">
+            <button id="fav-star" class="hidden" title="Favorite" aria-label="Favorite this image">★</button>
+        </div>
+        <div class="chip-row">
+            <div class="chip" id="chip"></div>
+            <span id="artist-tag" class="hidden"></span>
+            <a id="source-link" class="hidden" target="_blank" rel="noopener"></a>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="tags-overlay">
+        <div class="panel">
+            <h2>Tags</h2>
+            <div class="section-title">Staples (30)</div>
+            <div class="tag-grid" id="staple-grid"></div>
+            <div class="section-title">This Week (10)</div>
+            <div class="tag-grid" id="weekly-grid"></div>
+            <div class="panel-actions">
+                <button id="save-tags">Save (<span id="sel-count">0</span>)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="snowflake-overlay">
+        <div class="panel">
+            <h2>Snowflake</h2>
+            <div class="option-list" id="option-list"></div>
+            <div class="panel-actions">
+                <button id="save-snowflake">Save (<span id="snow-count">0</span>)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="favorites-overlay">
+        <div class="panel">
+            <div class="fav-head">
+                <button id="fav-back" class="ghost fav-back">← Back</button>
+                <h2>Favorites</h2>
+            </div>
+            <div class="fav-grid hidden" id="fav-grid"></div>
+            <p class="fav-empty" id="fav-empty">No favorites yet — tap the ★ on an image.</p>
+        </div>
+    </div>
+
+    <script>
+    const button = document.getElementById('surprise');
+    const label = document.getElementById('btn-label');
+    const img = document.getElementById('image');
+    const placeholder = document.getElementById('placeholder');
+    const chip = document.getElementById('chip');
+    const overlay = document.getElementById('tags-overlay');
+    const stapleGrid = document.getElementById('staple-grid');
+    const weeklyGrid = document.getElementById('weekly-grid');
+    const selCount = document.getElementById('sel-count');
+    const snowOverlay = document.getElementById('snowflake-overlay');
+    const optionList = document.getElementById('option-list');
+    const snowCount = document.getElementById('snow-count');
+    const sourceLink = document.getElementById('source-link');
+    const artistTag = document.getElementById('artist-tag');
+    const star = document.getElementById('fav-star');
+    const favOverlay = document.getElementById('favorites-overlay');
+    const favGrid = document.getElementById('fav-grid');
+    const favEmpty = document.getElementById('fav-empty');
+
+    const STORAGE_KEY = 'p20_tag_whitelist';
+    const SNOW_KEY = 'p20_snowflake';
+    const FAV_KEY = 'p20_favorites';
+    const FAV_CAP = 300;
+    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+    const MAX_ATTEMPTS = 5;
+    let attempts = 0;
+    let currentImage = null;
+
+    const STAPLES = [
+        'futanari', 'milf', 'dickgirl', 'gyaru', 'defloration', 'incest', 'blowjob',
+        'sex', 'vaginal', 'oral', 'handjob', 'paizuri', 'nipples', 'cum', 'creampie',
+        'facial', 'huge_breasts', 'small_breasts', 'yuri', 'solo', 'sex_toy', 'maid',
+        'lingerie', 'bikini', 'stockings', 'cat_ears', 'ahegao', 'bondage', 'pov', '1girl'
+    ];
+
+    const WEEKLY_POOL = [
+        '2girls', 'fellatio', 'big_breasts', 'flat_chest', 'lesbian', 'dildo', 'vibrator',
+        'schoolgirl_uniform', 'serafuku', 'thighhighs', 'tail', 'monster_girl', 'rope',
+        'handcuffs', 'gag', 'blindfold', 'femdom', 'harem', 'exhibitionism', 'doggystyle',
+        'cowgirl', 'missionary', 'sex_from_behind', 'anal', 'pregnant', 'netorare', 'netori',
+        'mind_break', 'hypnosis', 'masturbation', 'pussy', 'vulva', 'cameltoe', 'underboob',
+        'footjob', 'breast_sucking', 'clothed_sex', 'open_clothes', 'cum_in_pussy',
+        'public_sex', 'group_sex', 'feet', 'cleavage', 'underwear', 'wet_clothes', 'naked',
+        'topless', 'twintails', 'ponytail', 'long_hair', 'short_hair', 'cumshot',
+        'internal_cumshot', 'multiple_girls', 'dickgirl_on_female', 'futanari_on_female',
+        'netorase', 'bukkake'
+    ];
+
+    const SNOWFLAKE_OPTIONS = [
+        { id: 'propaganda', name: 'No Propaganda' },
+        { id: 'sunset', name: 'Sunset Town' },
+        { id: 'water', name: 'Water Saving Mode' },
+        { id: 'demons', name: 'These Are Demons' },
+        { id: 'ballpit', name: 'Ballpit Closed Due to AIDs' },
+        { id: 'ack', name: 'ACK!' }
+    ];
+
+    function mulberry32(seed) {
+        return function () {
+            seed = (seed + 0x6D2B79F5) | 0;
+            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    function weeklyTags() {
+        const week = Math.floor(Date.now() / WEEK_MS);
+        const rng = mulberry32(week);
+        const pool = WEEKLY_POOL.slice();
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            const tmp = pool[i];
+            pool[i] = pool[j];
+            pool[j] = tmp;
+        }
+        return pool.slice(0, 10);
+    }
+
+    function availableTags() {
+        return STAPLES.concat(weeklyTags());
+    }
+
+    function activeTags() {
+        const available = availableTags();
+        let saved = null;
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) saved = new Set(JSON.parse(raw));
+        } catch (e) {}
+        if (!saved) return available;
+        const active = available.filter(function (t) { return saved.has(t); });
+        return active.length ? active : available;
+    }
+
+    function makeChip(tag, checked) {
+        const lab = document.createElement('label');
+        lab.className = 'tag-chip';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = tag;
+        input.checked = checked;
+        input.addEventListener('change', updateCount);
+        const span = document.createElement('span');
+        span.textContent = tag;
+        lab.appendChild(input);
+        lab.appendChild(span);
+        return lab;
+    }
+
+    function updateCount() {
+        selCount.textContent = overlay.querySelectorAll('input:checked').length;
+    }
+
+    function openTags() {
+        const active = new Set(activeTags());
+        stapleGrid.textContent = '';
+        weeklyGrid.textContent = '';
+        STAPLES.forEach(function (t) { stapleGrid.appendChild(makeChip(t, active.has(t))); });
+        weeklyTags().forEach(function (t) { weeklyGrid.appendChild(makeChip(t, active.has(t))); });
+        updateCount();
+        overlay.classList.remove('hidden');
+    }
+
+    function closeTags() {
+        overlay.classList.add('hidden');
+    }
+
+    function saveTags() {
+        const tags = Array.prototype.map.call(
+            overlay.querySelectorAll('input:checked'),
+            function (input) { return input.value; }
+        );
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tags)); } catch (e) {}
+        closeTags();
+    }
+
+    function activeSnowflakes() {
+        try {
+            const raw = localStorage.getItem(SNOW_KEY);
+            if (raw) return new Set(JSON.parse(raw));
+        } catch (e) {}
+        return new Set();
+    }
+
+    function makeOption(opt, checked) {
+        const lab = document.createElement('label');
+        lab.className = 'option-row';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = opt.id;
+        input.checked = checked;
+        input.addEventListener('change', updateSnowCount);
+        const sw = document.createElement('span');
+        sw.className = 'switch';
+        const name = document.createElement('span');
+        name.className = 'option-name';
+        name.textContent = opt.name;
+        lab.appendChild(input);
+        lab.appendChild(sw);
+        lab.appendChild(name);
+        return lab;
+    }
+
+    function updateSnowCount() {
+        snowCount.textContent = snowOverlay.querySelectorAll('input:checked').length;
+    }
+
+    function openSnowflake() {
+        const active = activeSnowflakes();
+        optionList.textContent = '';
+        SNOWFLAKE_OPTIONS.forEach(function (opt) {
+            optionList.appendChild(makeOption(opt, active.has(opt.id)));
+        });
+        updateSnowCount();
+        snowOverlay.classList.remove('hidden');
+    }
+
+    function saveSnowflake() {
+        const ids = Array.prototype.map.call(
+            snowOverlay.querySelectorAll('input:checked'),
+            function (input) { return input.value; }
+        );
+        try { localStorage.setItem(SNOW_KEY, JSON.stringify(ids)); } catch (e) {}
+        snowOverlay.classList.add('hidden');
+    }
+
+    function makeFavTile(f) {
+        const tile = document.createElement('div');
+        tile.className = 'fav-tile';
+        const im = document.createElement('img');
+        im.src = f.thumb || f.url;
+        im.loading = 'lazy';
+        im.alt = '';
+        const rm = document.createElement('button');
+        rm.className = 'fav-remove';
+        rm.textContent = '\u00d7';
+        rm.title = 'Remove from favorites';
+        rm.addEventListener('click', function (event) {
+            event.stopPropagation();
+            removeFavorite(f.url);
+            renderFavorites();
+        });
+        tile.appendChild(im);
+        tile.appendChild(rm);
+        tile.addEventListener('click', function () { openFavorite(f); });
+        return tile;
+    }
+
+    function renderFavorites() {
+        const favs = loadFavorites();
+        favGrid.textContent = '';
+        favs.forEach(function (f) { favGrid.appendChild(makeFavTile(f)); });
+        favGrid.classList.toggle('hidden', favs.length === 0);
+        favEmpty.classList.toggle('hidden', favs.length > 0);
+    }
+
+    function openFavorites() {
+        renderFavorites();
+        favOverlay.classList.remove('hidden');
+    }
+
+    function openFavorite(f) {
+        favOverlay.classList.add('hidden');
+        attempts = 0;
+        const target = {
+            url: f.url,
+            source: f.source || null,
+            artist: f.artist || null,
+            thumb: f.thumb || f.url,
+            cat: f.cat || null,
+        };
+        img.onload = function () {
+            markSeen(target.url);
+            currentImage = target;
+            showSource(target.source);
+            showArtist(target.artist);
+            img.classList.add('visible');
+            placeholder.style.display = 'none';
+            updateFavStar();
+            showChip(target.cat || 'favorite', false);
+            resetButton();
+        };
+        img.onerror = function () {
+            img.classList.remove('visible');
+            currentImage = null;
+            updateFavStar();
+            placeholder.style.display = '';
+            showChip('Favorite failed to load', true);
+            resetButton();
+        };
+        if (!target.artist) requestArtist(target);
+        img.src = target.url;
+        img.alt = target.cat || 'favorite';
+    }
+
+    document.getElementById('tags-btn').addEventListener('click', openTags);
+    document.getElementById('save-tags').addEventListener('click', saveTags);
+    overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) closeTags();
+    });
+    document.getElementById('snowflake-btn').addEventListener('click', openSnowflake);
+    document.getElementById('save-snowflake').addEventListener('click', saveSnowflake);
+    snowOverlay.addEventListener('click', function (event) {
+        if (event.target === snowOverlay) snowOverlay.classList.add('hidden');
+    });
+    document.getElementById('favorites-btn').addEventListener('click', openFavorites);
+    document.getElementById('fav-back').addEventListener('click', function () {
+        favOverlay.classList.add('hidden');
+    });
+    favOverlay.addEventListener('click', function (event) {
+        if (event.target === favOverlay) favOverlay.classList.add('hidden');
+    });
+    star.addEventListener('click', toggleFavorite);
+    star.addEventListener('animationend', function () { star.classList.remove('pop'); });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeTags();
+            snowOverlay.classList.add('hidden');
+            favOverlay.classList.add('hidden');
+        }
+    });
+
+    function showChip(text, isError) {
+        chip.textContent = text;
+        chip.classList.toggle('error', !!isError);
+        chip.classList.add('shown');
+    }
+
+    function resetButton() {
+        button.disabled = false;
+        button.classList.remove('loading');
+        label.textContent = 'Surprise Me';
+    }
+
+    const RECENT_KEY = 'p20_recent';
+    const RECENT_CAP = 150;
+
+    function recentSeen() {
+        try {
+            const raw = sessionStorage.getItem(RECENT_KEY);
+            if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return [];
+    }
+
+    function isSeen(url) {
+        return recentSeen().indexOf(url) !== -1;
+    }
+
+    function markSeen(url) {
+        let list = recentSeen().filter(function (u) { return u !== url; });
+        list.push(url);
+        if (list.length > RECENT_CAP) list = list.slice(list.length - RECENT_CAP);
+        try { sessionStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function showSource(url) {
+        if (url) {
+            sourceLink.href = url;
+            try {
+                sourceLink.textContent = 'Source \u2014 ' + new URL(url).host;
+            } catch (e) {
+                sourceLink.textContent = 'Source';
+            }
+            sourceLink.classList.remove('hidden');
+        } else {
+            sourceLink.classList.add('hidden');
+        }
+    }
+
+    function showArtist(artist) {
+        if (artist) {
+            artistTag.textContent = String(artist).replace(/_/g, ' ');
+            artistTag.classList.remove('hidden');
+        } else {
+            artistTag.textContent = '';
+            artistTag.classList.add('hidden');
+        }
+    }
+
+    function requestArtist(target) {
+        if (!target.source) return;
+        fetch('/api/artist?source=' + encodeURIComponent(target.source))
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+                if (!d || !d.artist) return;
+                target.artist = d.artist;
+                if (currentImage === target) showArtist(target.artist);
+            })
+            .catch(function () {});
+    }
+
+    function loadFavorites() {
+        try {
+            const raw = localStorage.getItem(FAV_KEY);
+            if (raw) {
+                const list = JSON.parse(raw);
+                if (Array.isArray(list)) return list;
+            }
+        } catch (e) {}
+        return [];
+    }
+
+    function saveFavorites(list) {
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function isFav(url) {
+        return loadFavorites().some(function (f) { return f && f.url === url; });
+    }
+
+    function removeFavorite(url) {
+        saveFavorites(loadFavorites().filter(function (f) { return f && f.url !== url; }));
+        updateFavStar();
+    }
+
+    function updateFavStar() {
+        const shown = img.classList.contains('visible') && !!currentImage;
+        star.classList.toggle('hidden', !shown);
+        star.classList.toggle('favorited', !!(shown && isFav(currentImage.url)));
+    }
+
+    function toggleFavorite() {
+        if (!currentImage) return;
+        const list = loadFavorites();
+        const idx = list.findIndex(function (f) { return f && f.url === currentImage.url; });
+        if (idx >= 0) {
+            list.splice(idx, 1);
+        } else {
+            list.unshift({
+                url: currentImage.url,
+                source: currentImage.source || null,
+                artist: currentImage.artist || null,
+                thumb: currentImage.thumb || currentImage.url,
+                cat: currentImage.cat || null,
+                ts: Date.now(),
+            });
+            if (list.length > FAV_CAP) list.length = FAV_CAP;
+        }
+        saveFavorites(list);
+        updateFavStar();
+        star.classList.remove('pop');
+        void star.offsetWidth;
+        star.classList.add('pop');
+        if (!favOverlay.classList.contains('hidden')) renderFavorites();
+    }
+
+    function getRandomImage() {
+        attempts = 0;
+        button.disabled = true;
+        button.classList.add('loading');
+        label.textContent = 'Rolling\u2026';
+        chip.classList.remove('shown');
+        tryRoll();
+    }
+
+    function tryRoll() {
+        attempts++;
+        const pool = activeTags();
+        const category = pool[Math.floor(Math.random() * pool.length)];
+        const filters = Array.from(activeSnowflakes()).join(',');
+        const query = '/api/image?tags=' + encodeURIComponent(category)
+            + (filters ? '&filters=' + encodeURIComponent(filters) : '');
+
+        fetch(query)
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (isSeen(data.url)) {
+                    retryOrGiveUp('No new images \u2014 try again');
+                    return;
+                }
+                const target = {
+                    url: data.url,
+                    source: data.source,
+                    artist: null,
+                    thumb: data.thumb || data.url,
+                    cat: category,
+                };
+                img.onload = () => {
+                    markSeen(target.url);
+                    currentImage = target;
+                    showSource(target.source);
+                    showArtist(target.artist);
+                    img.classList.add('visible');
+                    placeholder.style.display = 'none';
+                    updateFavStar();
+                    showChip(category, false);
+                    resetButton();
+                };
+                img.onerror = () => {
+                    img.classList.remove('visible');
+                    currentImage = null;
+                    updateFavStar();
+                    retryOrGiveUp('Image failed to load');
+                };
+                requestArtist(target);
+                img.src = target.url;
+                img.alt = category;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                retryOrGiveUp('Request failed \u2014 try again');
+            });
+    }
+
+    function retryOrGiveUp(message) {
+        if (!img.classList.contains('visible')) {
+            placeholder.style.display = '';
+        }
+        if (attempts < MAX_ATTEMPTS) {
+            setTimeout(tryRoll, 300);
+            return;
+        }
+        showChip(message, true);
+        resetButton();
+    }
+
+    button.addEventListener('click', getRandomImage);
+    </script>
+</body>
+</html>
